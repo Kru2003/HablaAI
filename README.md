@@ -8,12 +8,16 @@ HablaAI is a beginner-friendly, AI-powered Spanish learning application that act
 ```text
 HablaAI/
 │
-├── main.py              # FastAPI application
-├── spanish_tutor.py     # Gemini-powered Spanish tutor
-├── requirements.txt     # Project dependencies
-├── .env                 # Environment variables (optional)
-├── .gitignore           # Files excluded from Git
-└── README.md            # Project documentation
+├── backend/
+│   ├── .venv/                   # Python virtual environment
+│   ├── .env                     # Environment variables
+│   ├── requirements.txt         # Python dependencies
+│   └── app/
+│       ├── main.py              # FastAPI application
+│       └── spanish_tutor.py     # Gemini-powered Spanish tutor
+│
+├── .gitignore                   # Git ignored files
+└── README.md                    # Project documentation
 ```
 
 ## 📋 Prerequisites
@@ -125,3 +129,4 @@ http://127.0.0.1:8000
 |---|---|---|
 | GET | `/` | Welcome message |
 | GET | `/health` | Application health status |
+| POST | `/chat` | Send a message to the AI Spanish tutor |

@@ -1,3 +1,6 @@
+import os
+
+from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
@@ -22,38 +25,42 @@ TEACHING RULES:
 6. Teach useful everyday vocabulary.
 7. Ask only one question at a time.
 8. Encourage the student to speak Spanish.
-
-Start by introducing yourself in Spanish.
 """
 
+# Store active conversations in memory
+conversations = {}
+
 # 3. Create a chat session
-chat = client.chats.create(
-    model="gemini-3.1-flash-lite",
-    config=types.GenerateContentConfig(
-        system_instruction=SYSTEM_INSTRUCTION,
-        temperature=0.7,
-    ),
-)
+def create_chat():
+    """Create a new Gemini conversation."""
+    return client.chats.create(
+        model="gemini-3.1-flash-lite",
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_INSTRUCTION,
+            temperature=0.7,
+        ),
+    )
 
-print("===================================")
-print("       Welcome to HablaAI")
-print("===================================")
-print("Your personal Spanish tutor")
-print("Type 'exit' to quit.")
-print()
 
-# 4. Interactive conversation loop
-while True:
+def get_tutor_response(message: str, conversation_id: str | None = None):
+    """Send a message to Gemini and return its response."""
 
-    user_message = input("You: ")
+    # Reuse an existing conversation, or create a new one
+    if conversation_id and conversation_id in conversations:
+        chat = conversations[conversation_id]
+    else:
+        chat = create_chat()
 
-    if user_message.lower() in ["exit", "quit"]:
-        print("HablaAI: ¡Hasta luego!")
-        break
+        # Use the supplied ID for an existing-but-unknown ID,
+        # otherwise generate a new ID.
+        import uuid
 
-    # 5. Send message to Gemini
-    response = chat.send_message(user_message)
+        conversation_id = conversation_id or str(uuid.uuid4())
+        conversations[conversation_id] = chat
 
-    # 6. Display AI response
-    print("\nHablaAI:", response.text)
-    print()
+    response = chat.send_message(message)
+
+    return {
+        "conversation_id": conversation_id,
+        "reply": response.text,
+    }
